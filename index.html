@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>منوی واقعیت افزوده</title>
+
+  <!-- model-viewer handles iOS (Quick Look) and Android (Scene Viewer / WebXR) AR -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a0a;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Header ── */
+    .header {
+      width: 100%;
+      padding: 20px 24px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .logo {
+      font-size: 13px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #c8a96e;
+      font-weight: 300;
+    }
+    .title {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff 0%, #c8a96e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-align: center;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: #888;
+      text-align: center;
+    }
+
+    /* ── Model viewer card ── */
+    .card {
+      margin: 24px 16px 0;
+      width: calc(100% - 32px);
+      max-width: 480px;
+      background: linear-gradient(145deg, #1a1a1a, #111);
+      border-radius: 24px;
+      border: 1px solid #2a2a2a;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0,0,0,.6);
+      position: relative;
+    }
+
+    .badge {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(200,169,110,.15);
+      border: 1px solid rgba(200,169,110,.4);
+      color: #c8a96e;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      z-index: 10;
+      backdrop-filter: blur(8px);
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 340px;
+      background: transparent;
+      --poster-color: transparent;
+    }
+
+    /* ── Custom AR button inside model-viewer slot ── */
+    #ar-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: calc(100% - 40px);
+      margin: 0 20px 20px;
+      padding: 16px;
+      background: linear-gradient(135deg, #c8a96e, #a07840);
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+      box-shadow: 0 8px 30px rgba(200,169,110,.35);
+    }
+    #ar-button:active { transform: scale(.97); }
+    #ar-button svg { flex-shrink: 0; }
+
+    /* ── Info strip ── */
+    .info {
+      margin: 14px 16px 0;
+      width: calc(100% - 32px);
+      max-width: 480px;
+      display: flex;
+      gap: 10px;
+    }
+    .info-chip {
+      flex: 1;
+      background: #161616;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+    .info-chip .val {
+      font-size: 18px;
+      font-weight: 700;
+      color: #c8a96e;
+    }
+    .info-chip .lbl {
+      font-size: 11px;
+      color: #555;
+      margin-top: 2px;
+    }
+
+    /* ── Steps ── */
+    .steps {
+      margin: 20px 16px 32px;
+      width: calc(100% - 32px);
+      max-width: 480px;
+      background: #111;
+      border: 1px solid #1e1e1e;
+      border-radius: 18px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .steps-title {
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: #555;
+      text-transform: uppercase;
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(200,169,110,.12);
+      border: 1px solid rgba(200,169,110,.3);
+      color: #c8a96e;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-text {
+      font-size: 13px;
+      color: #aaa;
+      line-height: 1.6;
+      padding-top: 3px;
+    }
+
+    /* ── No-AR fallback notice ── */
+    .no-ar-notice {
+      display: none;
+      margin: 12px 16px 0;
+      width: calc(100% - 32px);
+      max-width: 480px;
+      background: rgba(255,80,80,.08);
+      border: 1px solid rgba(255,80,80,.2);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #f88;
+      text-align: center;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">Smart Menu</div>
+    <div class="title">پیتزا مارگاریتا</div>
+    <div class="subtitle">روی میز خودت تجربه کن</div>
+  </div>
+
+  <div class="card">
+    <div class="badge">AR · سه‌بعدی</div>
+
+    <!--
+      ar-modes="webxr scene-viewer quick-look":
+        1. webxr  → اندروید کروم، AR واقعی روی میز
+        2. scene-viewer → اندروید، Google Scene Viewer (بدون مرورگر جدید)
+        3. quick-look → آیفون، AR Kit مستقیم روی میز
+      ar-scale="fixed" → سایز واقعی غذا حفظ میشه
+    -->
+    <model-viewer
+      id="viewer"
+      src="pizza.glb"
+      alt="پیتزا سه‌بعدی"
+      ar
+      ar-modes="webxr scene-viewer quick-look"
+      ar-scale="fixed"
+      scale="0.3 0.3 0.3"
+      camera-controls
+      auto-rotate
+      auto-rotate-delay="1000"
+      rotation-per-second="20deg"
+      shadow-intensity="1.2"
+      environment-image="neutral"
+      exposure="1"
+      ar-button-id="ar-button"
+    >
+      <!-- دکمه AR داخل slot مخصوص model-viewer -->
+      <button slot="ar-button" id="ar-button">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+          <line x1="12" y1="22.08" x2="12" y2="12"/>
+        </svg>
+        مشاهده روی میز واقعی
+      </button>
+    </model-viewer>
+  </div>
+
+  <!-- نمایش وقتی AR پشتیبانی نمیشه -->
+  <div class="no-ar-notice" id="noArNotice">
+    ⚠️ مرورگر شما از AR پشتیبانی نمیکند.<br>
+    لطفاً از Chrome (اندروید) یا Safari (آیفون) استفاده کنید.
+  </div>
+
+  <div class="info">
+    <div class="info-chip">
+      <div class="val">۳۲cm</div>
+      <div class="lbl">سایز واقعی</div>
+    </div>
+    <div class="info-chip">
+      <div class="val">۱۸۵k</div>
+      <div class="lbl">تومان</div>
+    </div>
+    <div class="info-chip">
+      <div class="val">۲۵′</div>
+      <div class="lbl">زمان آماده‌سازی</div>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="steps-title">نحوه استفاده از AR</div>
+    <div class="step">
+      <div class="step-num">۱</div>
+      <div class="step-text">روی دکمه طلایی «مشاهده روی میز واقعی» بزن</div>
+    </div>
+    <div class="step">
+      <div class="step-num">۲</div>
+      <div class="step-text">دوربین باز میشه — گوشی رو به سمت میز بگیر</div>
+    </div>
+    <div class="step">
+      <div class="step-num">۳</div>
+      <div class="step-text">وقتی نقطه‌های سفید روی میز ظاهر شدن، یه جا لمس کن</div>
+    </div>
+    <div class="step">
+      <div class="step-num">۴</div>
+      <div class="step-text">پیتزا با سایز واقعی روی میز ظاهر میشه — دوربین رو بچرخون!</div>
+    </div>
+  </div>
+
+  <script>
+    const viewer = document.getElementById('viewer');
+
+    // اگه AR اصلاً پشتیبانی نمیشه، notice رو نشون بده
+    viewer.addEventListener('ar-status', (e) => {
+      if (e.detail.status === 'failed') {
+        document.getElementById('noArNotice').style.display = 'block';
+      }
+    });
+
+    // اگه مرورگر اصلاً ar ندارد
+    if (!viewer.canActivateAR) {
+      // صبر کن model-viewer لود بشه
+      viewer.addEventListener('load', () => {
+        if (!viewer.canActivateAR) {
+          document.getElementById('noArNotice').style.display = 'block';
+        }
+      });
+    }
+  </script>
+</body>
+</html>
