@@ -3,432 +3,578 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>پیتزا مارگاریتا · AR Menu</title>
+  <title>پیتزا مارگاریتا · AR</title>
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
   <style>
     @font-face {
-      font-family: 'YB';
+      font-family: 'YekanBakh';
       src: url('YekanBakh-Regular.ttf') format('truetype');
       font-weight: 400;
     }
     @font-face {
-      font-family: 'YB';
+      font-family: 'YekanBakh';
       src: url('YekanBakh-Bold.ttf') format('truetype');
       font-weight: 700;
     }
 
     :root {
-      --bg:       #080B10;
-      --s1:       #0E1520;
-      --s2:       #131D2E;
-      --blue:     #3B82F6;
-      --blue2:    #60A5FA;
-      --green:    #10B981;
-      --amber:    #F59E0B;
-      --red:      #EF4444;
-      --border:   rgba(255,255,255,0.06);
-      --border2:  rgba(59,130,246,0.2);
-      --text:     #F1F5F9;
-      --sub:      #94A3B8;
-      --dim:      #334155;
+      --bg:       #0c0c0c;
+      --s1:       #141414;
+      --s2:       #1c1c1c;
+      --border:   #272727;
+      --gold:     #d4a843;
+      --gold-glow:rgba(212,168,67,0.18);
+      --teal:     #2dd4bf;
+      --teal-dim: rgba(45,212,191,0.12);
+      --text:     #f2ede4;
+      --muted:    #6b6560;
+      --mid:      #a09890;
     }
 
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-    body {
+    html, body {
+      width: 100%;
       background: var(--bg);
-      font-family: 'YB', system-ui, sans-serif;
-      font-weight: 400;
+      font-family: 'YekanBakh', sans-serif;
       color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       overflow-x: hidden;
     }
 
-    /* ── dot grid bg ── */
+    /* grain */
     body::before {
-      content:'';
-      position:fixed; inset:0;
-      background-image: radial-gradient(circle, rgba(59,130,246,0.08) 1px, transparent 1px);
-      background-size: 28px 28px;
-      pointer-events:none; z-index:0;
-    }
-
-    /* ── top glow ── */
-    body::after {
-      content:'';
-      position:fixed;
-      top:-120px; left:50%; transform:translateX(-50%);
-      width:500px; height:400px;
-      background:radial-gradient(ellipse at center, rgba(59,130,246,0.1) 0%, transparent 60%);
-      pointer-events:none; z-index:0;
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 999;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23g)' opacity='0.038'/%3E%3C/svg%3E");
     }
 
     .page {
-      position:relative; z-index:1;
-      width:100%; max-width:430px;
-      padding:0 16px 48px;
-      display:flex; flex-direction:column; align-items:center;
-      gap:14px;
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 0 0 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
     }
 
-    /* ════ HEADER ════ */
-    .header {
-      width:100%;
-      padding-top:36px;
-      display:flex; flex-direction:column; align-items:center;
-      gap:10px;
-      animation: up .5s ease both;
+    /* ═══════════ ① HERO TITLE ═══════════ */
+    .hero {
+      text-align: center;
+      padding: 44px 24px 28px;
+      animation: up 0.5s ease both;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .hero-eyebrow::before,
+    .hero-eyebrow::after {
+      content: '';
+      width: 24px; height: 1px;
+      background: var(--border);
+    }
+    .hero-title {
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.05;
+      margin-bottom: 6px;
+    }
+    .hero-sub {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 1.5px;
     }
 
-    .live-badge {
-      display:inline-flex; align-items:center; gap:7px;
-      background:rgba(16,185,129,0.1);
-      border:1px solid rgba(16,185,129,0.25);
-      color:#34D399;
-      font-size:11px; font-weight:700; letter-spacing:1.5px;
-      padding:5px 13px; border-radius:99px;
+    /* ═══════════ ② VIEWER ═══════════ */
+    .viewer-wrap {
+      padding: 0 16px;
+      animation: up 0.5s 0.07s ease both;
     }
-    .live-dot {
-      width:6px; height:6px; border-radius:50%;
-      background:#10B981;
-      box-shadow:0 0 6px #10B981;
-      animation:blink 1.4s infinite;
-    }
-
-    .item-title {
-      font-size:30px; font-weight:700;
-      color:var(--text);
-      text-align:center; line-height:1.2;
-    }
-
-    .item-sub {
-      font-size:13px; color:var(--sub);
-      text-align:center; line-height:1.7;
-      max-width:280px;
-    }
-
-    /* ════ 3D VIEWER CARD ════ */
     .viewer-card {
-      width:100%;
-      background:var(--s1);
-      border:1px solid var(--border2);
-      border-radius:22px;
-      overflow:hidden;
-      position:relative;
-      animation: up .5s .08s ease both;
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      position: relative;
     }
-
-    /* top gradient line */
-    .viewer-card::before {
-      content:'';
-      position:absolute; top:0; left:0; right:0; height:2px;
-      background:linear-gradient(90deg, transparent 0%, var(--blue) 40%, #818CF8 70%, transparent 100%);
-      z-index:2;
+    .viewer-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
     }
-
+    .vbar-left {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 11px; color: var(--muted);
+    }
+    .dot-live {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #3ddc84;
+      box-shadow: 0 0 6px #3ddc84;
+      animation: blink 1.8s ease infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .vbar-right {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 1.5px; color: var(--gold);
+      background: var(--gold-glow);
+      border: 1px solid rgba(212,168,67,.25);
+      padding: 3px 10px; border-radius: 20px;
+    }
     model-viewer {
-      width:100%; height:290px;
-      background:transparent;
-      --poster-color:transparent;
-      display:block;
+      width: 100%; height: 270px;
+      background: transparent;
+      --poster-color: transparent;
+    }
+    .viewer-foot {
+      border-top: 1px solid var(--border);
+      padding: 10px 18px;
+      font-size: 11px; color: var(--muted);
+      text-align: center;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
     }
 
-    /* label inside viewer */
-    .viewer-label {
-      position:absolute; bottom:14px; right:14px;
-      background:rgba(14,21,32,0.75);
-      border:1px solid var(--border2);
-      border-radius:8px;
-      padding:5px 10px;
-      font-size:11px; color:var(--blue2);
-      letter-spacing:1px; font-weight:700;
-      backdrop-filter:blur(8px);
-      z-index:3;
+    /* ═══════════ ③ AR BUTTON ═══════════ */
+    .ar-wrap {
+      padding: 16px 16px 0;
+      animation: up 0.5s 0.13s ease both;
     }
-
-    /* ════ AR BUTTON — always visible ════ */
-    .ar-btn-outer {
-      width:100%;
-      animation: up .5s .15s ease both;
-    }
-
     .ar-btn {
-      display:flex; align-items:center; justify-content:center; gap:10px;
-      width:100%; padding:17px 20px;
-      background:linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
-      border:none; border-radius:16px;
-      color:#fff;
-      font-family:'YB', sans-serif; font-size:15px; font-weight:700;
-      cursor:pointer;
-      position:relative; overflow:hidden;
-      transition:transform .15s, filter .15s;
-      box-shadow:0 8px 32px rgba(37,99,235,0.35), 0 1px 0 rgba(255,255,255,0.12) inset;
+      width: 100%;
+      background: var(--teal-dim);
+      border: 1.5px solid var(--teal);
+      border-radius: 22px;
+      padding: 28px 24px;
+      cursor: pointer;
+      font-family: 'YekanBakh', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      transition: transform .15s, box-shadow .15s;
+      box-shadow: 0 0 40px rgba(45,212,191,0.08), inset 0 0 30px rgba(45,212,191,0.04);
     }
-    .ar-btn:active { transform:scale(.97); filter:brightness(.9); }
+    .ar-btn::before {
+      content: '';
+      position: absolute;
+      top: -60%; left: -20%;
+      width: 140%; height: 120%;
+      background: radial-gradient(ellipse at center, rgba(45,212,191,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .ar-btn:active { transform: scale(.97); box-shadow: 0 0 20px rgba(45,212,191,0.06); }
 
-    /* shimmer */
-    .ar-btn::after {
-      content:'';
-      position:absolute; top:0; left:-80%;
-      width:50%; height:100%;
-      background:linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
-      transform:skewX(-15deg);
-      animation:shimmer 3s 1.5s infinite;
+    .ar-icon-ring {
+      width: 54px; height: 54px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(45,212,191,.4);
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(45,212,191,.08);
+      position: relative;
     }
-
-    .ar-btn svg { flex-shrink:0; }
-
-    /* disabled / no-AR state */
-    .ar-btn.disabled {
-      background:var(--s2);
-      box-shadow:none;
-      cursor:not-allowed;
-      opacity:.5;
+    .ar-icon-ring::after {
+      content: '';
+      position: absolute; inset: -6px;
+      border-radius: 50%;
+      border: 1px solid rgba(45,212,191,.15);
+      animation: ripple 2.5s ease infinite;
     }
-
-    /* ════ STATS ════ */
-    .stats {
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px; width:100%;
-      animation: up .5s .22s ease both;
+    @keyframes ripple {
+      0%   { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1.5); opacity: 0; }
     }
-
-    .stat {
-      background:var(--s1);
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:14px 8px 12px;
-      text-align:center;
-      display:flex; flex-direction:column; align-items:center; gap:4px;
+    .ar-btn-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--teal);
+      letter-spacing: -.3px;
     }
-
-    .stat-icon {
-      width:30px; height:30px; border-radius:8px;
-      display:flex; align-items:center; justify-content:center;
-      font-size:15px; margin-bottom:4px;
-    }
-    .si-blue  { background:rgba(59,130,246,0.12); }
-    .si-amber { background:rgba(245,158,11,0.12); }
-    .si-green { background:rgba(16,185,129,0.12); }
-
-    .stat-num {
-      font-size:16px; font-weight:700; color:var(--text);
-      line-height:1;
-    }
-    .stat-num sup {
-      font-size:10px; font-weight:400;
-      color:var(--sub); vertical-align:super;
-    }
-    .stat-lbl {
-      font-size:11px; color:var(--dim);
+    .ar-btn-sub {
+      font-size: 12px;
+      color: rgba(45,212,191,.55);
+      letter-spacing: .5px;
     }
 
-    /* ════ HOW TO USE ════ */
-    .how {
-      width:100%;
-      animation: up .5s .3s ease both;
+    /* ═══════════ ④ THREE INFO BOXES ═══════════ */
+    .info-row {
+      display: flex;
+      gap: 10px;
+      padding: 16px 16px 0;
+      animation: up 0.5s 0.18s ease both;
     }
+    .info-box {
+      flex: 1;
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .info-box-icon {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+    .info-box-val {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+    .info-box-lbl {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: .5px;
+    }
+    .info-box.highlight .info-box-val { color: var(--gold); }
 
-    .section-head {
-      display:flex; align-items:center; gap:8px;
-      margin-bottom:10px; padding-right:2px;
+    /* ═══════════ ⑤ HOW-TO AR ═══════════ */
+    .section {
+      padding: 24px 16px 0;
+      animation: up 0.5s 0.22s ease both;
     }
-    .section-head span {
-      font-size:11px; letter-spacing:2px;
-      color:var(--dim); text-transform:uppercase;
+    .sec-head {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px;
     }
-    .section-line {
-      flex:1; height:1px;
-      background:linear-gradient(to left, transparent, var(--border));
+    .sec-label {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 3px; color: var(--muted);
+      white-space: nowrap;
     }
+    .sec-line { flex:1; height:1px; background: var(--border); }
 
     .steps-card {
-      background:var(--s1);
-      border:1px solid var(--border);
-      border-radius:18px;
-      overflow:hidden;
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
     }
-
-    .step {
-      display:flex; align-items:center; gap:14px;
-      padding:14px 16px;
-      border-bottom:1px solid var(--border);
-      transition:background .2s;
+    .step-row {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
     }
-    .step:last-child { border-bottom:none; }
-
-    .step-num {
-      width:28px; height:28px; border-radius:50%;
-      display:flex; align-items:center; justify-content:center;
-      font-size:12px; font-weight:700;
-      flex-shrink:0;
+    .step-row:last-child { border-bottom: none; }
+    .step-n {
+      width: 30px; height: 30px;
+      border-radius: 9px;
+      background: var(--s2);
+      border: 1px solid var(--border);
+      color: var(--gold);
+      font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
     }
-    .sn1 { background:rgba(59,130,246,0.15); color:#60A5FA; border:1px solid rgba(59,130,246,0.3); }
-    .sn2 { background:rgba(124,58,237,0.15); color:#A78BFA; border:1px solid rgba(124,58,237,0.3); }
-    .sn3 { background:rgba(16,185,129,0.15); color:#34D399; border:1px solid rgba(16,185,129,0.3); }
-
-    .step-text {
-      font-size:13px; color:var(--sub); line-height:1.6;
+    .step-body { flex:1; }
+    .step-title {
+      font-size: 14px; font-weight: 700;
+      color: var(--text); margin-bottom: 3px;
     }
-    .step-text strong { color:var(--text); font-weight:700; }
+    .step-desc { font-size: 12px; color: var(--muted); line-height: 1.7; }
 
-    /* ════ NO-AR NOTICE ════ */
+    /* ═══════════ ⑥ INGREDIENTS ═══════════ */
+    .ing-list {
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .ing-card {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .ing-icon {
+      font-size: 26px;
+      width: 46px; height: 46px;
+      background: var(--s2);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .ing-body { flex:1; }
+    .ing-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .ing-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+    .ing-tag {
+      font-size: 10px; font-weight: 700;
+      padding: 4px 9px; border-radius: 20px;
+      flex-shrink: 0;
+    }
+    .tag-gold { background:rgba(212,168,67,.1); color:var(--gold); border:1px solid rgba(212,168,67,.25); }
+    .tag-teal { background:rgba(45,212,191,.1); color:var(--teal); border:1px solid rgba(45,212,191,.25); }
+
+    /* ═══════════ ⑦ NUTRITION ═══════════ */
+    .nut-grid {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 8px;
+    }
+    .nut-cell {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 8px;
+      text-align: center;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .nut-val { font-size: 20px; font-weight: 700; color: var(--text); line-height:1; }
+    .nut-unit { font-size: 9px; font-weight: 700; color: var(--gold); letter-spacing:1px; }
+    .nut-lbl { font-size: 10px; color: var(--muted); }
+
+    /* NO-AR */
     .no-ar {
-      display:none;
-      width:100%; padding:13px 16px;
-      background:rgba(239,68,68,0.07);
-      border:1px solid rgba(239,68,68,0.2);
-      border-radius:14px;
-      font-size:13px; color:#F87171;
-      text-align:center; line-height:1.7;
-      animation: up .4s ease both;
+      display: none;
+      margin: 14px 16px 0;
+      background: rgba(220,60,60,.08);
+      border: 1px solid rgba(220,60,60,.25);
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 13px; color: #e07070;
+      text-align: center; line-height: 1.7;
     }
 
-    /* ════ FOOTER ════ */
-    .footer {
-      font-size:10px; letter-spacing:2.5px;
-      color:var(--dim);
-      padding-top:4px;
-    }
-
-    /* ════ KEYFRAMES ════ */
     @keyframes up {
-      from { opacity:0; transform:translateY(16px); }
+      from { opacity:0; transform:translateY(18px); }
       to   { opacity:1; transform:translateY(0); }
-    }
-    @keyframes blink {
-      0%,100% { opacity:1; }
-      50%      { opacity:.25; }
-    }
-    @keyframes shimmer {
-      0%   { left:-80%; }
-      100% { left:140%; }
     }
   </style>
 </head>
 <body>
-
 <div class="page">
 
-  <!-- HEADER -->
-  <header class="header">
-    <div class="live-badge">
-      <div class="live-dot"></div>
-      SMART MENU · AR
-    </div>
-    <h1 class="item-title">پیتزا مارگاریتا</h1>
-    <p class="item-sub">گوجه‌فرنگی، موزارلا تازه و ریحان — دستور اصیل ایتالیایی</p>
-  </header>
-
-  <!-- 3D VIEWER -->
-  <div class="viewer-card">
-    <model-viewer
-      id="mv"
-      src="pizza.glb"
-      alt="مدل سه‌بعدی پیتزا"
-      camera-controls
-      auto-rotate
-      auto-rotate-delay="600"
-      rotation-per-second="20deg"
-      shadow-intensity="1.2"
-      environment-image="neutral"
-      exposure="1.1"
-      ar
-      ar-modes="webxr scene-viewer quick-look"
-      ar-scale="fixed"
-      scale="0.3 0.3 0.3"
-    ></model-viewer>
-    <div class="viewer-label">3D · بچرخون</div>
+  <!-- ① TITLE -->
+  <div class="hero">
+    <div class="hero-eyebrow">PIZZA CLASSICA</div>
+    <h1 class="hero-title">پیتزا مارگاریتا</h1>
+    <span class="hero-sub">Margherita Originale · Napoli 1889</span>
   </div>
 
-  <!-- AR BUTTON (always visible, independent) -->
-  <div class="ar-btn-outer">
-    <button class="ar-btn" id="arBtn" onclick="launchAR()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2.2"
-           stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-        <line x1="12" y1="22.08" x2="12" y2="12"/>
-      </svg>
-      مشاهده روی میز واقعی
+  <!-- ② VIEWER -->
+  <div class="viewer-wrap">
+    <div class="viewer-card">
+      <div class="viewer-bar">
+        <div class="vbar-left">
+          <div class="dot-live"></div>
+          مدل سه‌بعدی
+        </div>
+        <div class="vbar-right">3D · GLB</div>
+      </div>
+      <model-viewer
+        id="viewer"
+        src="pizza.glb"
+        alt="پیتزا مارگاریتا"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        ar-scale="fixed"
+        scale="0.3 0.3 0.3"
+        camera-controls
+        auto-rotate
+        auto-rotate-delay="800"
+        rotation-per-second="18deg"
+        shadow-intensity="1"
+        environment-image="neutral"
+        exposure="1.1"
+        ar-button-id="ar-hidden"
+      >
+        <button slot="ar-button" id="ar-hidden" style="display:none"></button>
+      </model-viewer>
+      <div class="viewer-foot">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        با انگشت بچرخان · pinch برای زوم
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ AR BUTTON -->
+  <div class="ar-wrap">
+    <button class="ar-btn" id="ar-trigger">
+      <div class="ar-icon-ring">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+          <line x1="12" y1="22.08" x2="12" y2="12"/>
+        </svg>
+      </div>
+      <span class="ar-btn-title">پیتزا را روی میزت ببین</span>
+      <span class="ar-btn-sub">واقعیت افزوده · Augmented Reality</span>
     </button>
   </div>
 
-  <!-- NO-AR NOTICE -->
   <div class="no-ar" id="noAr">
     ⚠️ مرورگر شما از AR پشتیبانی نمی‌کند.<br>
-    Chrome (اندروید) یا Safari (آیفون) استفاده کنید.
+    از <strong>Chrome</strong> (اندروید) یا <strong>Safari</strong> (آیفون) استفاده کنید.
   </div>
 
-  <!-- STATS -->
-  <div class="stats">
-    <div class="stat">
-      <div class="stat-icon si-blue">📐</div>
-      <div class="stat-num" dir="ltr">32<sup>cm</sup></div>
-      <div class="stat-lbl">سایز</div>
+  <!-- ④ INFO BOXES -->
+  <div class="info-row">
+    <div class="info-box highlight">
+      <div class="info-box-icon">💰</div>
+      <div class="info-box-val">۱۸۵K</div>
+      <div class="info-box-lbl">تومان</div>
     </div>
-    <div class="stat">
-      <div class="stat-icon si-amber">💰</div>
-      <div class="stat-num">۷۵۰<sup>هزار</sup></div>
-      <div class="stat-lbl">تومان</div>
+    <div class="info-box">
+      <div class="info-box-icon">📏</div>
+      <div class="info-box-val">۳۲cm</div>
+      <div class="info-box-lbl">اندازه</div>
     </div>
-    <div class="stat">
-      <div class="stat-icon si-green">⏱</div>
-      <div class="stat-num">۲۵<sup>دقیقه</sup></div>
-      <div class="stat-lbl">آماده‌سازی</div>
+    <div class="info-box">
+      <div class="info-box-icon">⏱</div>
+      <div class="info-box-val">۲۵′</div>
+      <div class="info-box-lbl">آماده‌سازی</div>
     </div>
   </div>
 
-  <!-- HOW TO USE -->
-  <div class="how">
-    <div class="section-head">
-      <span>نحوه استفاده از AR</span>
-      <div class="section-line"></div>
+  <!-- ⑤ HOW-TO -->
+  <div class="section" style="animation-delay:0.22s">
+    <div class="sec-head">
+      <div class="sec-label">نحوه استفاده از AR</div>
+      <div class="sec-line"></div>
     </div>
     <div class="steps-card">
-      <div class="step">
-        <div class="step-num sn1">۱</div>
-        <div class="step-text">روی دکمه <strong>«مشاهده روی میز واقعی»</strong> ضربه بزن</div>
+      <div class="step-row">
+        <div class="step-n">۱</div>
+        <div class="step-body">
+          <div class="step-title">دکمه بالا رو بزن</div>
+          <div class="step-desc">روی «پیتزا را روی میزت ببین» ضربه بزن</div>
+        </div>
       </div>
-      <div class="step">
-        <div class="step-num sn2">۲</div>
-        <div class="step-text">دوربین باز میشه — گوشی رو به سمت <strong>میز یا سطح صاف</strong> بگیر</div>
+      <div class="step-row">
+        <div class="step-n">۲</div>
+        <div class="step-body">
+          <div class="step-title">دوربین باز می‌شه</div>
+          <div class="step-desc">گوشی رو به سمت میز یا زمین صاف بگیر</div>
+        </div>
       </div>
-      <div class="step">
-        <div class="step-num sn3">۳</div>
-        <div class="step-text">وقتی نقطه‌های سفید ظاهر شدن، <strong>روی میز لمس کن</strong> تا مدل قرار بگیره</div>
+      <div class="step-row">
+        <div class="step-n">۳</div>
+        <div class="step-body">
+          <div class="step-title">سطح شناسایی می‌شه</div>
+          <div class="step-desc">وقتی نقطه‌های سفید ظاهر شدن، روی میز لمس کن</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-n">۴</div>
+        <div class="step-body">
+          <div class="step-title">پیتزا با سایز واقعی!</div>
+          <div class="step-desc">دور بزن، نزدیک شو، عکس بگیر 📸</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="footer">SMART MENU · AR EXPERIENCE</div>
+  <!-- ⑥ INGREDIENTS -->
+  <div class="section" style="animation-delay:0.27s">
+    <div class="sec-head">
+      <div class="sec-label">مواد تشکیل‌دهنده</div>
+      <div class="sec-line"></div>
+    </div>
+    <div class="ing-list">
+      <div class="ing-card">
+        <div class="ing-icon">🍅</div>
+        <div class="ing-body">
+          <div class="ing-name">سس گوجه سن مارزانو</div>
+          <div class="ing-desc">گوجه‌های تازه DOP از ناپل ایتالیا</div>
+        </div>
+        <div class="ing-tag tag-gold">پریمیوم</div>
+      </div>
+      <div class="ing-card">
+        <div class="ing-icon">🧀</div>
+        <div class="ing-body">
+          <div class="ing-name">موزارلا بوفالا</div>
+          <div class="ing-desc">پنیر تازه از شیر بوفالو · ذوب کامل</div>
+        </div>
+        <div class="ing-tag tag-gold">اصیل</div>
+      </div>
+      <div class="ing-card">
+        <div class="ing-icon">🌿</div>
+        <div class="ing-body">
+          <div class="ing-name">ریحان تازه</div>
+          <div class="ing-desc">برگ‌های تازه — بعد از پخت اضافه می‌شه</div>
+        </div>
+        <div class="ing-tag tag-teal">تازه</div>
+      </div>
+      <div class="ing-card">
+        <div class="ing-icon">🫒</div>
+        <div class="ing-body">
+          <div class="ing-name">روغن زیتون فرابکر</div>
+          <div class="ing-desc">سرد‌فشاری ایتالیایی — Extra Virgin</div>
+        </div>
+        <div class="ing-tag tag-teal">طبیعی</div>
+      </div>
+      <div class="ing-card">
+        <div class="ing-icon">🍞</div>
+        <div class="ing-body">
+          <div class="ing-name">خمیر نئاپولیتن</div>
+          <div class="ing-desc">۷۲ ساعت تخمیر طبیعی · فر هیزمی ۴۸۵°</div>
+        </div>
+        <div class="ing-tag tag-gold">سنتی</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑦ NUTRITION -->
+  <div class="section" style="animation-delay:0.32s">
+    <div class="sec-head">
+      <div class="sec-label">ارزش غذایی</div>
+      <div class="sec-line"></div>
+    </div>
+    <div class="nut-grid">
+      <div class="nut-cell">
+        <span class="nut-val">۸۵۰</span>
+        <span class="nut-unit">KCAL</span>
+        <span class="nut-lbl">کالری</span>
+      </div>
+      <div class="nut-cell">
+        <span class="nut-val">۳۸</span>
+        <span class="nut-unit">G</span>
+        <span class="nut-lbl">پروتئین</span>
+      </div>
+      <div class="nut-cell">
+        <span class="nut-val">۹۵</span>
+        <span class="nut-unit">G</span>
+        <span class="nut-lbl">کربوهیدرات</span>
+      </div>
+      <div class="nut-cell">
+        <span class="nut-val">۲۸</span>
+        <span class="nut-unit">G</span>
+        <span class="nut-lbl">چربی</span>
+      </div>
+    </div>
+  </div>
 
 </div>
 
 <script>
-  const mv    = document.getElementById('mv');
-  const btn   = document.getElementById('arBtn');
-  const noAr  = document.getElementById('noAr');
+  const viewer  = document.getElementById('viewer');
+  const trigger = document.getElementById('ar-trigger');
+  const noAr    = document.getElementById('noAr');
 
-  function launchAR() {
-    if (mv && mv.canActivateAR) {
-      mv.activateAR();
+  trigger.addEventListener('click', () => {
+    if (viewer.canActivateAR) {
+      viewer.activateAR();
     } else {
       noAr.style.display = 'block';
-      btn.classList.add('disabled');
+      noAr.scrollIntoView({ behavior: 'smooth' });
     }
-  }
+  });
 
-  mv.addEventListener('ar-status', (e) => {
-    if (e.detail.status === 'failed') {
-      noAr.style.display = 'block';
-      btn.classList.add('disabled');
-    }
+  viewer.addEventListener('ar-status', e => {
+    if (e.detail.status === 'failed') noAr.style.display = 'block';
+  });
+  viewer.addEventListener('load', () => {
+    if (!viewer.canActivateAR) noAr.style.display = 'block';
   });
 </script>
 </body>
