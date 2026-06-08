@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>پیتزا مارگاریتا · AR Menu</title>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+  <style>
+    @font-face {
+      font-family: 'YB';
+      src: url('YekanBakh-Regular.ttf') format('truetype');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'YB';
+      src: url('YekanBakh-Bold.ttf') format('truetype');
+      font-weight: 700;
+    }
+
+    :root {
+      --bg:       #080B10;
+      --s1:       #0E1520;
+      --s2:       #131D2E;
+      --blue:     #3B82F6;
+      --blue2:    #60A5FA;
+      --green:    #10B981;
+      --amber:    #F59E0B;
+      --red:      #EF4444;
+      --border:   rgba(255,255,255,0.06);
+      --border2:  rgba(59,130,246,0.2);
+      --text:     #F1F5F9;
+      --sub:      #94A3B8;
+      --dim:      #334155;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      background: var(--bg);
+      font-family: 'YB', system-ui, sans-serif;
+      font-weight: 400;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    /* ── dot grid bg ── */
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background-image: radial-gradient(circle, rgba(59,130,246,0.08) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events:none; z-index:0;
+    }
+
+    /* ── top glow ── */
+    body::after {
+      content:'';
+      position:fixed;
+      top:-120px; left:50%; transform:translateX(-50%);
+      width:500px; height:400px;
+      background:radial-gradient(ellipse at center, rgba(59,130,246,0.1) 0%, transparent 60%);
+      pointer-events:none; z-index:0;
+    }
+
+    .page {
+      position:relative; z-index:1;
+      width:100%; max-width:430px;
+      padding:0 16px 48px;
+      display:flex; flex-direction:column; align-items:center;
+      gap:14px;
+    }
+
+    /* ════ HEADER ════ */
+    .header {
+      width:100%;
+      padding-top:36px;
+      display:flex; flex-direction:column; align-items:center;
+      gap:10px;
+      animation: up .5s ease both;
+    }
+
+    .live-badge {
+      display:inline-flex; align-items:center; gap:7px;
+      background:rgba(16,185,129,0.1);
+      border:1px solid rgba(16,185,129,0.25);
+      color:#34D399;
+      font-size:11px; font-weight:700; letter-spacing:1.5px;
+      padding:5px 13px; border-radius:99px;
+    }
+    .live-dot {
+      width:6px; height:6px; border-radius:50%;
+      background:#10B981;
+      box-shadow:0 0 6px #10B981;
+      animation:blink 1.4s infinite;
+    }
+
+    .item-title {
+      font-size:30px; font-weight:700;
+      color:var(--text);
+      text-align:center; line-height:1.2;
+    }
+
+    .item-sub {
+      font-size:13px; color:var(--sub);
+      text-align:center; line-height:1.7;
+      max-width:280px;
+    }
+
+    /* ════ 3D VIEWER CARD ════ */
+    .viewer-card {
+      width:100%;
+      background:var(--s1);
+      border:1px solid var(--border2);
+      border-radius:22px;
+      overflow:hidden;
+      position:relative;
+      animation: up .5s .08s ease both;
+    }
+
+    /* top gradient line */
+    .viewer-card::before {
+      content:'';
+      position:absolute; top:0; left:0; right:0; height:2px;
+      background:linear-gradient(90deg, transparent 0%, var(--blue) 40%, #818CF8 70%, transparent 100%);
+      z-index:2;
+    }
+
+    model-viewer {
+      width:100%; height:290px;
+      background:transparent;
+      --poster-color:transparent;
+      display:block;
+    }
+
+    /* label inside viewer */
+    .viewer-label {
+      position:absolute; bottom:14px; right:14px;
+      background:rgba(14,21,32,0.75);
+      border:1px solid var(--border2);
+      border-radius:8px;
+      padding:5px 10px;
+      font-size:11px; color:var(--blue2);
+      letter-spacing:1px; font-weight:700;
+      backdrop-filter:blur(8px);
+      z-index:3;
+    }
+
+    /* ════ AR BUTTON — always visible ════ */
+    .ar-btn-outer {
+      width:100%;
+      animation: up .5s .15s ease both;
+    }
+
+    .ar-btn {
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      width:100%; padding:17px 20px;
+      background:linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+      border:none; border-radius:16px;
+      color:#fff;
+      font-family:'YB', sans-serif; font-size:15px; font-weight:700;
+      cursor:pointer;
+      position:relative; overflow:hidden;
+      transition:transform .15s, filter .15s;
+      box-shadow:0 8px 32px rgba(37,99,235,0.35), 0 1px 0 rgba(255,255,255,0.12) inset;
+    }
+    .ar-btn:active { transform:scale(.97); filter:brightness(.9); }
+
+    /* shimmer */
+    .ar-btn::after {
+      content:'';
+      position:absolute; top:0; left:-80%;
+      width:50%; height:100%;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+      transform:skewX(-15deg);
+      animation:shimmer 3s 1.5s infinite;
+    }
+
+    .ar-btn svg { flex-shrink:0; }
+
+    /* disabled / no-AR state */
+    .ar-btn.disabled {
+      background:var(--s2);
+      box-shadow:none;
+      cursor:not-allowed;
+      opacity:.5;
+    }
+
+    /* ════ STATS ════ */
+    .stats {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px; width:100%;
+      animation: up .5s .22s ease both;
+    }
+
+    .stat {
+      background:var(--s1);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px 8px 12px;
+      text-align:center;
+      display:flex; flex-direction:column; align-items:center; gap:4px;
+    }
+
+    .stat-icon {
+      width:30px; height:30px; border-radius:8px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:15px; margin-bottom:4px;
+    }
+    .si-blue  { background:rgba(59,130,246,0.12); }
+    .si-amber { background:rgba(245,158,11,0.12); }
+    .si-green { background:rgba(16,185,129,0.12); }
+
+    .stat-num {
+      font-size:16px; font-weight:700; color:var(--text);
+      line-height:1;
+    }
+    .stat-num sup {
+      font-size:10px; font-weight:400;
+      color:var(--sub); vertical-align:super;
+    }
+    .stat-lbl {
+      font-size:11px; color:var(--dim);
+    }
+
+    /* ════ HOW TO USE ════ */
+    .how {
+      width:100%;
+      animation: up .5s .3s ease both;
+    }
+
+    .section-head {
+      display:flex; align-items:center; gap:8px;
+      margin-bottom:10px; padding-right:2px;
+    }
+    .section-head span {
+      font-size:11px; letter-spacing:2px;
+      color:var(--dim); text-transform:uppercase;
+    }
+    .section-line {
+      flex:1; height:1px;
+      background:linear-gradient(to left, transparent, var(--border));
+    }
+
+    .steps-card {
+      background:var(--s1);
+      border:1px solid var(--border);
+      border-radius:18px;
+      overflow:hidden;
+    }
+
+    .step {
+      display:flex; align-items:center; gap:14px;
+      padding:14px 16px;
+      border-bottom:1px solid var(--border);
+      transition:background .2s;
+    }
+    .step:last-child { border-bottom:none; }
+
+    .step-num {
+      width:28px; height:28px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:12px; font-weight:700;
+      flex-shrink:0;
+    }
+    .sn1 { background:rgba(59,130,246,0.15); color:#60A5FA; border:1px solid rgba(59,130,246,0.3); }
+    .sn2 { background:rgba(124,58,237,0.15); color:#A78BFA; border:1px solid rgba(124,58,237,0.3); }
+    .sn3 { background:rgba(16,185,129,0.15); color:#34D399; border:1px solid rgba(16,185,129,0.3); }
+
+    .step-text {
+      font-size:13px; color:var(--sub); line-height:1.6;
+    }
+    .step-text strong { color:var(--text); font-weight:700; }
+
+    /* ════ NO-AR NOTICE ════ */
+    .no-ar {
+      display:none;
+      width:100%; padding:13px 16px;
+      background:rgba(239,68,68,0.07);
+      border:1px solid rgba(239,68,68,0.2);
+      border-radius:14px;
+      font-size:13px; color:#F87171;
+      text-align:center; line-height:1.7;
+      animation: up .4s ease both;
+    }
+
+    /* ════ FOOTER ════ */
+    .footer {
+      font-size:10px; letter-spacing:2.5px;
+      color:var(--dim);
+      padding-top:4px;
+    }
+
+    /* ════ KEYFRAMES ════ */
+    @keyframes up {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes blink {
+      0%,100% { opacity:1; }
+      50%      { opacity:.25; }
+    }
+    @keyframes shimmer {
+      0%   { left:-80%; }
+      100% { left:140%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      SMART MENU · AR
+    </div>
+    <h1 class="item-title">پیتزا مارگاریتا</h1>
+    <p class="item-sub">گوجه‌فرنگی، موزارلا تازه و ریحان — دستور اصیل ایتالیایی</p>
+  </header>
+
+  <!-- 3D VIEWER -->
+  <div class="viewer-card">
+    <model-viewer
+      id="mv"
+      src="pizza.glb"
+      alt="مدل سه‌بعدی پیتزا"
+      camera-controls
+      auto-rotate
+      auto-rotate-delay="600"
+      rotation-per-second="20deg"
+      shadow-intensity="1.2"
+      environment-image="neutral"
+      exposure="1.1"
+      ar
+      ar-modes="webxr scene-viewer quick-look"
+      ar-scale="fixed"
+      scale="0.3 0.3 0.3"
+    ></model-viewer>
+    <div class="viewer-label">3D · بچرخون</div>
+  </div>
+
+  <!-- AR BUTTON (always visible, independent) -->
+  <div class="ar-btn-outer">
+    <button class="ar-btn" id="arBtn" onclick="launchAR()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+        <line x1="12" y1="22.08" x2="12" y2="12"/>
+      </svg>
+      مشاهده روی میز واقعی
+    </button>
+  </div>
+
+  <!-- NO-AR NOTICE -->
+  <div class="no-ar" id="noAr">
+    ⚠️ مرورگر شما از AR پشتیبانی نمی‌کند.<br>
+    Chrome (اندروید) یا Safari (آیفون) استفاده کنید.
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-icon si-blue">📐</div>
+      <div class="stat-num" dir="ltr">32<sup>cm</sup></div>
+      <div class="stat-lbl">سایز</div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon si-amber">💰</div>
+      <div class="stat-num">۷۵۰<sup>هزار</sup></div>
+      <div class="stat-lbl">تومان</div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon si-green">⏱</div>
+      <div class="stat-num">۲۵<sup>دقیقه</sup></div>
+      <div class="stat-lbl">آماده‌سازی</div>
+    </div>
+  </div>
+
+  <!-- HOW TO USE -->
+  <div class="how">
+    <div class="section-head">
+      <span>نحوه استفاده از AR</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="steps-card">
+      <div class="step">
+        <div class="step-num sn1">۱</div>
+        <div class="step-text">روی دکمه <strong>«مشاهده روی میز واقعی»</strong> ضربه بزن</div>
+      </div>
+      <div class="step">
+        <div class="step-num sn2">۲</div>
+        <div class="step-text">دوربین باز میشه — گوشی رو به سمت <strong>میز یا سطح صاف</strong> بگیر</div>
+      </div>
+      <div class="step">
+        <div class="step-num sn3">۳</div>
+        <div class="step-text">وقتی نقطه‌های سفید ظاهر شدن، <strong>روی میز لمس کن</strong> تا مدل قرار بگیره</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">SMART MENU · AR EXPERIENCE</div>
+
+</div>
+
+<script>
+  const mv    = document.getElementById('mv');
+  const btn   = document.getElementById('arBtn');
+  const noAr  = document.getElementById('noAr');
+
+  function launchAR() {
+    if (mv && mv.canActivateAR) {
+      mv.activateAR();
+    } else {
+      noAr.style.display = 'block';
+      btn.classList.add('disabled');
+    }
+  }
+
+  mv.addEventListener('ar-status', (e) => {
+    if (e.detail.status === 'failed') {
+      noAr.style.display = 'block';
+      btn.classList.add('disabled');
+    }
+  });
+</script>
+</body>
+</html>
